@@ -1,0 +1,16 @@
+fieldset {
+    max-width: 300px;
+}
+
+input {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+button {
+    margin-top: 4px;
+}
+
+input[type=text] {
+    width: 80px;
+}

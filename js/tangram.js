@@ -12,6 +12,8 @@ var DEFAULT_THICKNESS = 1;
 var TAB_HEIGHT_RATIO = 0.25;
 var TAB_WIDTH_RATIO_SMALLEST_SIZE = 1/3;
 
+var isInInch = true;
+
 var size = DEFAULT_SIZE;
 var boardThickness = DEFAULT_THICKNESS;
 var cutProperties = new api.gcode.CutProperties(
@@ -37,8 +39,13 @@ function checkNumber(id) {
         element.value = 0;
         return 0;
     }
-    element.value = value;
+    element.value = value.toFixed(5);
     return value;
+}
+
+function checkNumberInInch(id, inInch) {
+    var delta = (inInch === true) ? 1 : api.MILLIMETER_TO_INCH;
+    return checkNumber(id) * delta;
 }
 
 function getTabProperties(size, boardThickness) {
@@ -50,15 +57,67 @@ function getTabProperties(size, boardThickness) {
 }
 
 function applyOptions() {
-    size = checkNumber("size");
-    boardThickness = checkNumber("board-thickness");
+    size = checkNumberInInch("size", isInInch);
+    boardThickness = checkNumberInInch("board-thickness", isInInch);
 }
 
 function applyCutProperties() {
-    cutProperties.bitWidth = checkNumber("bit-width");
-    cutProperties.bitLength = checkNumber("bit-length");
-    cutProperties.feedrate = checkNumber("feedrate");
-    safeZ = checkNumber("safeZ");
+    cutProperties.bitWidth = checkNumberInInch("bit-width", isInInch);
+    cutProperties.bitLength = checkNumberInInch("bit-length", isInInch);
+    cutProperties.feedrate = checkNumberInInch("feedrate", isInInch);
+    safeZ = checkNumberInInch("safeZ", isInInch);
+}
+
+function showUnitsInInches(inInch) {
+    var text = (inInch === true) ? "in" : "mm";
+    var elements = document.getElementsByTagName("span");
+    var i = 0;
+
+    for(i = 0; i < elements.length; i++) {
+        elements[i].innerHTML = text;
+    }
+
+    isInInch = inInch;
+    applyOptions();
+    applyCutProperties();
+}
+
+function convertInputs(inInch) {
+    function changeElement(id, conversionFunction) {
+        var n = checkNumber(id);
+        document.getElementById(id).value = conversionFunction(n);
+    }
+
+    if(inInch === isInInch) {
+        return false;
+    }
+
+    var f = api.convertMillimeterToInch;
+    if(inInch === false) {
+        f = api.convertInchToMillimeter;
+    }
+
+    changeElement("size", f);
+    changeElement("board-thickness", f);
+    changeElement("bit-width", f);
+    changeElement("bit-length", f);
+    changeElement("feedrate", f);
+    changeElement("safeZ", f);
+
+    isInInch = inInch;
+    return true;
+}
+
+function convertInputInInch() {
+    if(convertInputs(true) === true) {
+        showUnitsInInches(true);
+    }
+}
+
+function convertInputInMillimeter() {
+    if(convertInputs(false) === true) {
+        showUnitsInInches(false);
+    }
 }
 
 function generate() {
@@ -115,5 +174,9 @@ document.getElementById("safeZ").value = DEFAULT_SAFEZ;
 
 document.getElementById("size-apply").onclick = applyOptions;
 document.getElementById("cut-apply").onclick = applyCutProperties;
-
 document.getElementById("generate").onclick = generate;
+
+document.getElementById("unit-in").onclick = convertInputInInch;
+document.getElementById("unit-mm").onclick = convertInputInMillimeter;
+
+showUnitsInInches(true);
