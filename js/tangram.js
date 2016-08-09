@@ -176,6 +176,7 @@ document.getElementById("size-apply").onclick = applyOptions;
 document.getElementById("cut-apply").onclick = applyCutProperties;
 document.getElementById("generate").onclick = generate;
 
+document.getElementById("unit-in").checked = true;
 document.getElementById("unit-in").onclick = convertInputInInch;
 document.getElementById("unit-mm").onclick = convertInputInMillimeter;
 
