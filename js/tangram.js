@@ -1,5 +1,5 @@
 /*jslint todo: true, browser: true, continue: true, white: true*/
-/*global api*/
+/*global api, FabMoDashboard*/
 
 //All values are considered in inches
 var DEFAULT_BIT_WIDTH = 0.5;
@@ -159,10 +159,23 @@ function generate() {
         path2DC, boardThickness, cutProperties, tabProperties, safeZ
     );
 
-    var arrayCode = [codeA, codeB, codeC];
-    console.log(arrayCode);
-    var codeComplete = arrayCode.join("\n");
-    console.log(codeComplete);
+    var gcode = [
+        api.gcode.inInches(),
+        api.gcode.spindleOn(),
+        codeA,
+        codeB,
+        codeC,
+        api.gcode.jogTo(new api.math.Vector(0, 0, safeZ)),
+        api.gcode.spindleOff(),
+        api.gcode.rewind(),
+    ].join("\n");
+
+    var fabmoDashboard = new FabMoDashboard();
+    fabmoDashboard.submitJob({
+        file : gcode,
+        filename : "tangram.nc",
+        description : "Generates tangram pieces."
+    });
 }
 
 document.getElementById("size").value = DEFAULT_SIZE;
