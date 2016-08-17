@@ -16,7 +16,7 @@ var isInInch = true;
 
 var size = DEFAULT_SIZE;
 var boardThickness = DEFAULT_THICKNESS;
-var cutProperties = new api.gcode.CutProperties(
+var cutProperties = new api.CutProperties(
     DEFAULT_BIT_WIDTH, DEFAULT_BIT_LENGTH, 0, DEFAULT_FEEDRATE
 );
 var safeZ = DEFAULT_SAFEZ;
@@ -50,7 +50,7 @@ function checkNumberInInch(id, inInch) {
 
 function getTabProperties(size, boardThickness) {
     var smallestSize = Math.sqrt(size * size + size * size) / 4;
-    return new api.gcode.TabProperties(
+    return new api.TabProperties(
         smallestSize * TAB_WIDTH_RATIO_SMALLEST_SIZE,
         boardThickness * TAB_HEIGHT_RATIO
     );
